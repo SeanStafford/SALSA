@@ -1,0 +1,77 @@
+                                                                                
+                                                                                
+                                      ..                    .                   
+                                      ))).                  )).                 
+                   ..                 )))))))))).           )))))).             
+             .(((((((                 )))))))))))))))      )))))))))))).        
+        (((((((((((((                 )))))))))))))       ))))))))))))))))      
+       (((((((((((((((            .@@@@@@@@@@)))))       )))))))))))))))        
+         (((((((((((((@@@@@   @@@@@@@@@@@@@@@@@@@@ @@@@@)))))))))))))           
+           ((((((((((((@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@)))))             
+           .@(((@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@))@@@@@@@@      
+ ..@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@..
+ (SALSASALSASALSASALSASALSASALSASALSASALSASALSASALSASALSASALSASALSASALSASALSASA)
+  SALSASALSASALSASALSASALSASALSASALSASALSASALSASALSASALSASALSASALSASALSASALSASA 
+   SALSASALSASALSASALSASALSASALSASALSASALSASALSASALSASALSASALSASALSASALSASALSA  
+    SALSASALSASALSASALSASALSASALSASALSASALSASALSASALSASALSASALSASALSASALSASAL   
+      SALSASALSASALSASALSASALSASALSASALSASALSASALSASALSASALSASALSASALSASALS     
+         SALSASALSASALSASALSASALSASALSASALSASALSASALSASALSASALSASALSASAL        
+          ' SALSASALSASALSASALSASALSASALSASALSASALSASALSASALSASALSASA '         
+         SALS'''SALSASALSASALSASALSASALSASALSASALSASALSASALSASALS'''SALS        
+         SALSASAL'''' SALSASALSA'SALSASALSASALSASALSASALSAS ''''SALSASAL        
+        SALSASALSASAL            SALSASALSASALSA            SALSASALSASAL       
+                                 SALSASALSASALSA                                
+                                 SALSASALSASALSA                                
+                                                                                
+                                                                                
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+                                                                                
+                                                                                
+    SSSSSSS            AA          LLLL           SSSSSSS            AA         
+ SSSSSSSSSSSS         AAAA         LLLL        SSSSSSSSSSSS         AAAA        
+SSSS                 AAAAAA        LLLL       SSSS                 AAAAAA       
+SSSSS               AAA  AAA       LLLL       SSSSS               AAA  AAA      
+ SSSSSSSSS         AAA    AAA      LLLL        SSSSSSSSS         AAA    AAA     
+    SSSSSSSSS     AAA      AAA     LLLL           SSSSSSSSS     AAA      AAA    
+         SSSSS   AAAAAAAAAAAAAA    LLLL                SSSSS   AAAAAAAAAAAAAA   
+          SSSS  AAAAAAAAAAAAAAAA   LLLL                 SSSS  AAAAAAAAAAAAAAAA  
+ SSSSSSSSSSSS  AAAA          AAAA  LLLLLLLLLLL SSSSSSSSSSSS  AAAA          AAAA 
+  SSSSSSSSS   AAAA            AAAA LLLLLLLLLLL  SSSSSSSSS   AAAA            AAAA
+                                                                                
+                                                                                
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+                                                                                
+                                                                                
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+░░░░░░                                                                    ░░░░░░
+░░░░░░  version 0.1                                                       ░░░░░░
+░░░░░░                                                                    ░░░░░░
+░░░░░░  script created on 2023-03-24                                      ░░░░░░
+░░░░░░                                                                    ░░░░░░
+░░░░░░  script created by Sean Stafford                                   ░░░░░░
+░░░░░░                                                                    ░░░░░░
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+░░░░░░                                                                    ░░░░░░
+░░░░░░  SALSA Authors                                                     ░░░░░░
+░░░░░░                                                                    ░░░░░░
+░░░░░░  Dr. Sean M Stafford                                               ░░░░░░
+░░░░░░  Dr. Alex Aduenko                                                  ░░░░░░
+░░░░░░  Marcus Djokic                                                     ░░░░░░
+░░░░░░  Dr. Yu-Hsiu Lin                                                   ░░░░░░
+░░░░░░  Dr. Jose L Mendoza-Cortes                                         ░░░░░░
+░░░░░░                                                                    ░░░░░░
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+░░░░░░                                                                    ░░░░░░
+░░░░░░  This work was supported in part by computational resources and    ░░░░░░
+░░░░░░    services provided by the Institute for Cyber-Enabled Research   ░░░░░░
+░░░░░░    at Michigan State University.                                   ░░░░░░
+░░░░░░                                                                    ░░░░░░
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░░
+                                                                                
+                                                                                
