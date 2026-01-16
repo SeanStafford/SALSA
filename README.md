@@ -66,7 +66,7 @@ SALSA automates the discovery of novel semiconductor materials through a four-st
 
 ```bash
 # Clone and setup
-git clone https://github.com/yourusername/SALSA.git
+git clone https://github.com/SeanStafford/SALSA.git
 cd SALSA
 
 # Create virtual environment
@@ -78,7 +78,7 @@ make install-dev
 
 # Configure environment
 cp .env.example .env
-# Edit .env with your paths (especially POTCAR_PATH for VASP pseudopotentials)
+# Edit .env to set PROJECT_ROOT (all other paths derive from it)
 ```
 
 
