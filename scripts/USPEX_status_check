@@ -1,0 +1,287 @@
+#!/bin/bash
+
+# Completed on March 25 2023
+# Author: Sean Stafford
+
+
+print_usage() {
+	echo ""
+	echo "Usage: USPEX_status_check calculation_directory" 
+	echo "       USPEX_status_check -d directory_depth"
+	echo "       USPEX_status_check -d directory_depth [-p parent_directory] [-e exclude_status] [-n stage_number]"
+	echo "       USPEX_status_check -h "
+	echo ""
+}
+
+
+help_fmt=" %-25s%s\n"
+print_help() {
+	print_usage
+
+	echo "positional arguments:"
+	printf "$help_fmt" "calculation_directory" "Individual calculation directory." 
+
+	echo "optional arguments:"
+	printf "$help_fmt" "-d directory_depth"  "Directory depth at which to check all statuses."
+	printf "$help_fmt" "-p parent_directory" "Directory from which to search at some depth. Default is '.'."
+	printf "$help_fmt" "-e exclude_status"   "Status(es) to exclude in printed results. Use format 'status1|status2' to exclude multiple statuses."
+	printf "$help_fmt" "-n stage_number"     "USPEX setting: Number of stages in 'abinitioCode' block. Default is 6."
+	printf "$help_fmt" "-h" "Print this help message and exit."
+	echo ""
+}
+
+# default flag values
+stage_number=6
+
+# parse single character flags
+# for more info see: stackoverflow.com/a/21128172/7839195
+while getopts ':d:p:e:n:h' flag; do
+  case "${flag}" in
+	d) directory_depth=$OPTARG
+	;;
+
+	p) parent_directory=$OPTARG
+	;;
+
+	e) exclude_status=$OPTARG
+	;;
+
+	n) stage_number=$OPTARG
+	;;
+
+	h) print_help
+	exit 0 
+	;;
+	
+	*) print_usage
+	exit 1 
+	;;
+  esac
+done
+
+Max () {
+	arr=("$@")
+	IFS=$'\n'
+	echo "${arr[*]}" | sort -nr | head -n1
+}
+
+TimeSinceModified () {
+	lastModificationSeconds=$(date -r $1 +%s)
+	currentSeconds=$(date +%s)
+	echo $((currentSeconds - lastModificationSeconds))
+}	
+
+
+CheckStatus () {
+	dir=$1
+	cd $dir
+	calcname=$(basename $(pwd))
+	
+	stage_number="$(grep -A 1 abinitioCode INPUT.txt | tail -n 1 | wc -w )"
+	population_size="$(grep populationSize INPUT.txt | tr -s ' ' | cut -d' ' -f 1)"
+	streak_req="$( grep stopCrit INPUT.txt | tr -s ' ' | cut -d' ' -f 1 )"
+	
+	# Overall Status
+	if [[ -f USPEX_IS_DONE ]]; then
+		status="DONE"
+		maxprcntdone="100%"
+		minjobrem=0
+		curgen="- "
+		beststreakmsg="-"
+		curwaiting="-"
+		stagehist=()
+		for ((i=1; i<=$stage_number; i++)); do stagehist+=("-"); done
+		donethisgen="-"
+	elif [[ ! -f INPUT.txt ]]; then
+		status="Not_A_Calculation"
+		maxprcntdone="-"
+		minjobrem="-"
+		curgen="-"
+		beststreakmsg="-"
+		curwaiting="-"
+		stagehist=()
+		for ((i=1; i<=$stage_number; i++)); do stagehist+=("-"); done
+		donethisgen="-"
+	elif [[ ! -d results1 ]]; then
+		status="Waiting"
+		maxprcntdone="0%"
+		minjobrem=$(( $streak_req * $population_size * $stage_number ))
+		curgen=0
+		beststreakmsg="-"
+		curwaiting="-"
+		stagehist=()
+		for ((i=1; i<=$stage_number; i++)); do stagehist+=("-"); done
+		donethisgen="-"
+	elif [[ -d results2 ]]; then
+		status="Multiple_Results"
+		maxprcntdone="?"
+		minjobrem="?"
+		curgen="?"
+		beststreakmsg="?"
+		curwaiting="?"
+		stagehist=()
+		for ((i=1; i<=$stage_number; i++)); do stagehist+=("?"); done
+		donethisgen="?"
+	elif [[ -f NOT_YET ]]; then
+		status="Stalled"
+		maxprcntdone="?"
+		minjobrem="?"
+		curgen="?"
+		beststreakmsg="?"
+		curwaiting="?"
+		stagehist=()
+		for ((i=1; i<=$stage_number; i++)); do stagehist+=("?"); done
+		donethisgen="?"
+	else
+		timesincemod=$(TimeSinceModified log)
+		haltedthresh=7200
+		if $( [[ $timesincemod -gt $haltedthresh ]]); then
+			status="Halted"
+		else
+			status="Running"
+		fi
+		
+		# Current Generation
+		curgen=$(( $(grep -c "New generation produced" log ) + 1 ))
+	
+		# Same Best Fitness Streak
+		if [[ -f results1/BESTIndividuals ]]; then
+			bestiheader="$(head -n 1 results1/BESTIndividuals)"
+			bestikw="Density "
+			afterkw="${bestiheader#*$bestikw}"
+			fitnesscol="$(( ${#bestiheader} - ${#afterkw} + 1))"
+			bestprevfits=($(tail -n +3 results1/BESTIndividuals | cut -c "$fitnesscol"- | tr -s " " | cut -d" " -f2))
+			bestcurfits="${bestprevfits[-1]}"
+			beststreak=$(grep -o -- "$bestcurfits" <<< "${bestprevfits[*]}" | wc -l)	
+#			if [[ $(cat results1/BESTIndividuals | wc -l) -gt 2 ]]; then
+#				curgen=$(( $(cat results1/BESTIndividuals | wc -l) - 1))
+#			fi
+		else
+			beststreak=0
+		fi
+		if [ $beststreak -gt 1 ]; then
+			beststreakmsg=$beststreak
+		else	
+			beststreakmsg="-"
+		fi
+
+		# Current Stage Histogram
+		curstagekw="/bin/bash: synclient: command not found"
+		curstagelist=($(tac log | fgrep -m 1  -A 300 "$curstagekw" | tac | grep -oP "step\K.*" | cut -d" " -f1))
+		stages=($(seq 1 $stage_number))
+		stagehist=()
+		for n in ${stages[*]}; do
+			stagehist+=("$(grep -o "$n" <<< "${curstagelist[*]}" | wc -l)")
+			#stagehist+=("$a")
+		done
+		#totalthisgen=$(grep -m 1 -A 300 "Structure 1 " log | grep "Structure " | wc -l)
+		genkw="Read Seeds ... "
+		if [ $(tac log | fgrep -c "$genkw") -eq 0 ]; then 
+			totalthisgen=$population_size
+		else
+			totalthisgen=$( tac log | fgrep -m 1 -A 300 "$genkw" | grep "Structure " | wc -l)
+		fi
+		structsrun=($( tac log | fgrep -m 1 -B 100000 "$genkw" | tac | grep "^Individual : " | cut -d":" -f2 | cut -d" " -f2 | tr ' ' '\n' | sort -nu ))
+		structsrun+=(0)
+		maxstructrun=$( Max "${structsrun[@]}")
+		#donethisgenextra=$(tac log | fgrep -m 1 -B 100000 "$genkw" | tac | grep "JobID=0.01" | wc -l )
+		#donethisgentotal=$(tac log | fgrep -m 1 -B 100000 "$genkw" | tac | grep "Relaxation is done." | wc -l )
+		#donethisgenreal=$(( $donethisgentotal - $donethisgenextra))
+		currunning=$(IFS=+; echo "$(( ${stagehist[*]} ))")	
+		curwaiting=$(($totalthisgen - $maxstructrun))
+		donethisgen=$(($totalthisgen - $currunning - $curwaiting))
+	
+		# Min jobs remaining
+		minjobrem=0
+		for i in ${stages[@]}; do
+			minjobrem=$(( $minjobrem +  $i * stagehist[-$i]))
+		done
+		minjobrem=$(( $minjobrem + $curwaiting * $stage_number ))
+		mingensrem=$(( $streak_req - 1 - $beststreak))
+		minjobrem=$(( $minjobrem + $mingensrem * $population_size * $stage_number ))
+		
+		# Min percent of minimum possible remaining
+		# Only count highest stage jobs here
+		minhighstagejobsrem=$(( $mingensrem * $population_size + $currunning + $curwaiting ))
+		minpossiblehighstagejobs=$(( $population_size * $streak_req ))
+		maxprcntdone=$( bc <<< "scale = 0; (100 - 100*$minhighstagejobsrem / $minpossiblehighstagejobs)" )
+		maxprcntdone="${maxprcntdone}%"
+	fi
+	
+	#echo "  curgen $curgen beststreak $beststreak curwaiting $curwaiting "
+#	echo "$(
+#		printf '%-20.20s| %-18.18s| %5.5s  %-5.5s| %4.4s  %-5.5s|   %-4.4s ' $calcname $status $maxprcntdone $minjobrem $curgen $beststreak $curwaiting;
+#		for stage in ${stagehist[@]}; do
+#			printf '%-4.4s ' $stage
+#		done;
+#		printf '%-4.4s| ' $donethisgen ;)"
+	
+	echo "$calcname $status $maxprcntdone $minjobrem $curgen $beststreakmsg $curwaiting ${stagehist[@]} $donethisgen"
+}
+
+# -------------------------------------------------------------------------------------------------------------------
+# End of functions
+# -------------------------------------------------------------------------------------------------------------------
+
+# Succinct status info format
+succinctfmt='| %-20.20s| %-18.18s| %6.6s  %-6.6s| %5.5s  %-6.6s|  %-4.4s '
+for i in $(seq 1 $stage_number); do
+	succinctfmt="$succinctfmt %-4.4s"
+done
+succinctfmt="$succinctfmt%4.4s |\n"
+succincttitlefmt='| %-20.20s| %-18.18s| %-14.14s| %-13.13s|   %-38.38s |\n'
+horizontalline=" ------------------------------------------------------------------------------------------------------------------- "
+if [ ! -z $directory_depth ]; then
+	if [ ! -z $parent_directory ]; then
+		cd $parent_directory
+	fi
+	homedir=$(pwd)
+	echo "$horizontalline" 
+	printf "$succincttitlefmt" "" "" "  Progress" "Generation" "    Current Generation by Stage"
+	printf "$succinctfmt" "Calculation Name" "Status" "% Done" "Remain" "This" "Streak" "0" $(seq 1 $stage_number) "Done"
+	echo "$horizontalline" 
+	for calculation_directory in $(find . -mindepth $directory_depth -maxdepth $directory_depth -type d ); do 
+		statusoutput=($(CheckStatus "$calculation_directory"))
+		if  [[ ! ${statusoutput[1]} =~ ^($exclude_status)$ ]]; then
+			printf "$succinctfmt" ${statusoutput[@]}
+		fi
+		cd $homedir
+	done
+	echo "$horizontalline" 
+else
+	if [ "$1" == "" ]; then
+		calculation_directory="."
+	else
+		calculation_directory="$1"
+	fi
+#	echo 3 numbers: "$(grep -A 1 abinitioCode INPUT.txt | tail -n 1 | wc -w )"  "$(grep populationSize INPUT.txt | tr -s ' ' | cut -d' ' -f 1)"  "$( grep stopCrit INPUT.txt | tr -s ' ' | cut -d' ' -f 1 )"
+	stage_number="$(grep -A 1 abinitioCode ${calculation_directory}/INPUT.txt | tail -n 1 | wc -w )"
+#	population_size="$(grep populationSize INPUT.txt | tr -s ' ' | cut -d' ' -f 1)"
+#	streak_req="$( grep stopCrit INPUT.txt | tr -s ' ' | cut -d' ' -f 1 )"
+	statusoutput=($(CheckStatus "$calculation_directory"))
+	echo "$horizontalline"
+	echo The status of the USPEX optimization in ${statusoutput[0]} is \"${statusoutput[1]}\"
+	if [[ ${statusoutput[1]} =~ ^(Running|Halted)$ ]]; then
+		echo This optimization is at most ${statusoutput[2]} complete and requires at least ${statusoutput[3]} more individual calculations.
+		echo This process could take unpredictably longer if USPEX finds a structure more fit than the current best.
+		echo -n This is currenly on generation ${statusoutput[4]} and has had a streak of ${statusoutput[5]} previous generation"(s)"
+		echo " with the same best fitness."
+		echo Structures from the current generation are in the following stages of progress:
+		expandedstagefmt='      %-10.10s '
+		expandedstagetitlefmt=' %-11.11s '
+		for i in $(seq 1 $stage_number ); do 
+			expandedstagetitlefmt="$expandedstagetitlefmt Stage %-4.4s "
+			expandedstagefmt="$expandedstagefmt %-10.10s "
+		done
+		expandedstagefmt="$expandedstagefmt %-10.10s \n"
+		expandedstagetitlefmt="$expandedstagetitlefmt %-10.10s \n"
+		printf "$expandedstagetitlefmt" "Not Started" $(seq 1 $stage_number) "Completed"
+		printf "$expandedstagefmt" ${statusoutput[@]:6}
+	elif [[ ${statusoutput[1]} == "Multiple_Results" ]]; then
+		echo "This status checking script cannot parse USPEX calculations with multiple results folders."
+	elif [[ ${statusoutput[1]} == "DONE" ]]; then
+		echo "Congrats!"
+	fi
+	echo "$horizontalline"
+fi
+

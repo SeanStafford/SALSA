@@ -1,0 +1,3 @@
+#!/bin/bash 
+status_i=$(head -n 1 inventory.csv | awk -F , -v b=$1 '{for (i=1;i<=NF;i++) { if ($i == b) { print i } }}')
+cat inventory.csv | cut -d, -f $status_i
